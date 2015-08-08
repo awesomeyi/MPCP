@@ -1,7 +1,3 @@
 
 
 *.secret
-
-/html/secret.class.php
-
-/SQL/createUser.sql
