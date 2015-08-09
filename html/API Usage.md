@@ -17,3 +17,11 @@ Returns a JSON Object:
 + status: Success/Failure
 + message: Error message
 + authcode: Returns an authentication code on success
+
+**From now on, ALL requests must have `authcode` attached as a URL parameter**
+
+### logout.php (GET)
+
+Returns a JSON Object:
++ status: Success/Failure
++ message: Error message
