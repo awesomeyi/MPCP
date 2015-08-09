@@ -6,7 +6,16 @@ CREATE TABLE users
 (
 	userid int unsigned not null auto_increment primary key,
 	username char(50) not null,
-	password char(50) not null
+	password char(64) not null,
+	authcode char(64)
+);
+
+CREATE TABLE auth
+(
+	sid int unsigned not null auto_increment primary key,
+	userid int unsigned not null,
+	authcode char(64),
+	expire DATETIME 
 );
 
 CREATE TABLE cellphones

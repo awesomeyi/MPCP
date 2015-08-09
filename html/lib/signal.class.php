@@ -23,10 +23,12 @@
 		public static $error;
 		public static $dbConnectionError;
 		public static $usernameTakenError;
+		public static $credentialError;
 		public static $success;
 	}
 	Signal::$error = new ISignal("Generic error", 0);
 	Signal::$dbConnectionError = new ISignal("Database connection error", 0);
 	Signal::$usernameTakenError = new ISignal("This username has been taken", 0);
+	Signal::$credentialError = new ISignal("Invalid credentials", 0);
 	Signal::$success = new ISignal("Generic success", 1);
 ?>
