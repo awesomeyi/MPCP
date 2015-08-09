@@ -2,7 +2,7 @@
 
 	require_once("secret.class.php");
 	require_once("signal.class.php");
-	
+
 	class DataAccess
 	{
 		private static $ip = "localhost";
@@ -11,6 +11,18 @@
 		}
 		private static function hashSalt($pass) {
 			return hash("sha256", $pass.Secret::$salt);
+		}
+		private static function getUserId($authcode) {
+			$db = self::getConnection();
+			$stmt = $db->prepare("SELECT userid FROM auth WHERE authcode=? AND NOW() < expire");
+			$stmt->bind_param('s', $authcode);
+			$stmt->execute();
+			$res = $stmt->get_result();
+
+			if($res->num_rows == 1) {
+				return $res->fetch_assoc()['userid'];
+			}
+			return False;
 		} 
 
 		public static function registerUser($uname, $pword) {
@@ -75,7 +87,14 @@
 			return Signal::$credentialError;
 		}
 		public static function logOut($authcode) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+			if(!$userid) return Signal::$authenticationError;
 
+			if(!$db->query("DELETE FROM auth WHERE userid=$userid")) {
+				return Signal::$databaseError;
+			}
+			return Signal::$success;
 		}
 	}
 ?>
