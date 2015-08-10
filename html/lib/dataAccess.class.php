@@ -41,7 +41,7 @@
 			$stmt->close();
 
 			//Insert user into database
-			$stmt = $db->prepare('INSERT INTO users VALUES (null, ?, ?, null)');
+			$stmt = $db->prepare('INSERT INTO users VALUES (null, ?, ?)');
 			$stmt->bind_param('ss', $uname, $hash);
 			if(!$stmt->execute()) {
 				return Signal::$dbConnectionError;
