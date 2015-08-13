@@ -86,6 +86,14 @@
 
 			return Signal::$credentialError;
 		}
+
+		//Functions here all take authcodes
+		public static function verify($authcode) {
+			$userid = self::getUserId($authcode);
+			if(!$userid) return Signal::$authenticationError;
+			return Signal::$success;
+		}
+
 		public static function logOut($authcode) {
 			$db = self::getConnection();
 			$userid = self::getUserId($authcode);
