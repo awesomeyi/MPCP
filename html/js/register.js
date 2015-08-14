@@ -20,7 +20,7 @@ function init()
 
 		$.ajax({
 			type: "POST",
-			url: "API/register.php",
+			url: "API/register",
 			dataType: "json",
 			data: reginfo,
 			success: function(data) {

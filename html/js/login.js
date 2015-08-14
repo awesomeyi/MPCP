@@ -18,7 +18,7 @@ function init()
 
 		$.ajax({
 			type: "POST",
-			url: "../API/login.php",
+			url: "../API/login",
 			dataType: "json",
 			data: loginfo,
 			success: function(data) {
