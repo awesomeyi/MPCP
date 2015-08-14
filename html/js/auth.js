@@ -43,6 +43,12 @@ AuthAccess.prototype = {
 		this.API("username", function(data) {
 			fun(data.message);
 		}, function () {});
+	},
+
+	getAccounts: function(fun) {
+		this.API("bank/accounts", function(data) {
+			fun(data.message);
+		}, function () {});
 	}
 }
 

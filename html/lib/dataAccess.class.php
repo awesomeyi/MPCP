@@ -125,5 +125,21 @@
 				return $res;
 			return new ISIGNAL($res->fetch_assoc()['username'], 1);
 		}
+
+		public static function getAccounts($authcode) {
+			$query = "SELECT accountid, bankname, balance FROM accounts INNER JOIN banks ON accounts.bankid = banks.bankid WHERE userid=?";
+			$res = self::authQuery($authcode, $query);
+			if($res instanceof ISIGNAL)
+				return $res;
+			$rows = array();
+			while($r = $res->fetch_assoc()) {
+				$rows[] = $r;
+			}
+			return new ISIGNAL($rows, 1);
+		}
+
+		public static function createAccount($authcode) {
+
+		}
 	}
 ?>

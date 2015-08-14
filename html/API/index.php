@@ -47,6 +47,9 @@
 			},
 			"username" => function() {
 				return authAction("getUsername");
+			},
+			"bank/accounts" => function() {
+				return authAction("getAccounts");
 			}
 
 	);
