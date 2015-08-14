@@ -25,3 +25,9 @@ Returns a JSON Object:
 Returns a JSON Object:
 + status: Success/Failure
 + message: Error message
+
+### verify.php (GET)
+
+Verifies authenticity
+Returns a JSON Object:
++ status: Success/Failure
