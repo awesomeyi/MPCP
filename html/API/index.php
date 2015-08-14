@@ -11,6 +11,12 @@
 		}
 		return $ret;
 	}
+	function authAction($fun) {
+		$fun = 'DataAccess::'.$fun;
+		$authcode = $_GET["authcode"];
+		$res = call_user_func($fun, $authcode);
+		return getRet($res);
+	}
 
 	$requestChoice = array(
 
@@ -34,18 +40,17 @@
 			},
 
 			"logout" => function() {
-				$authcode = $_GET["authcode"];
-				$res = DataAccess::logOut($authcode);
-				return getRet($res);
+				return authAction("logOut");
 			},
-
 			"verify" => function() {
-				$authcode = $_GET["authcode"];
-				$res = DataAccess::verify($authcode);
-				return getRet($res);
+				return authAction("verify");
+			},
+			"username" => function() {
+				return authAction("getUsername");
 			}
 
 	);
+
 	if(!isset($requestChoice[$request])) {
 		header("HTTP/1.0 404 Not Found");
 		die();

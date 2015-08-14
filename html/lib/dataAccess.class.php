@@ -18,12 +18,25 @@
 			$stmt->bind_param('s', $authcode);
 			$stmt->execute();
 			$res = $stmt->get_result();
+			$stmt->close();
 
 			if($res->num_rows == 1) {
 				return $res->fetch_assoc()['userid'];
 			}
 			return False;
-		} 
+		}
+		private static function authQuery($authcode, $query) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+			if(!$userid) return Signal::$authenticationError;
+
+			$stmt = $db->prepare($query);
+			$stmt->bind_param('d', $userid);
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			return $stmt->get_result();
+		}
 
 		public static function registerUser($uname, $pword) {
 			$db = self::getConnection();
@@ -100,9 +113,17 @@
 			if(!$userid) return Signal::$authenticationError;
 
 			if(!$db->query("DELETE FROM auth WHERE userid=$userid")) {
-				return Signal::$databaseError;
+				return Signal::$dbConnectionError;
 			}
 			return Signal::$success;
+		}
+
+		public static function getUsername($authcode) {
+			$query = "SELECT username FROM users WHERE userid=?";
+			$res = self::authQuery($authcode, $query);
+			if($res instanceof ISIGNAL)
+				return $res;
+			return new ISIGNAL($res->fetch_assoc()['username'], 1);
 		}
 	}
 ?>

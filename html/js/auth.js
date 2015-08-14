@@ -16,9 +16,9 @@ AuthAccess.prototype = {
 			dataType: "json",
 			success: function(data) {
 				if(data.status == "Success") {
-					success();
+					success(data);
 				} else {
-					fail();
+					fail(data);
 				}
 			},
 			failure: function() {
@@ -32,8 +32,17 @@ AuthAccess.prototype = {
 			window.location.href = "login.html";
 		});
 	},
-	getUsername: function() {
-		this.API("")
+
+	logout: function() {
+		this.API("logout", function() {
+			window.location.href = "login.html";
+		}, function() { });
+	},
+
+	getUsername: function(fun) {
+		this.API("username", function(data) {
+			fun(data.message);
+		}, function () {});
 	}
 }
 

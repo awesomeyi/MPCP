@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src="../js/auth.js"></script>
+		<script src="../js/bankHome.js"></script>
+		<title> General Registration </title>
+	</head>
+	<body onload="init()">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">CryptBank</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="../">Main</a></li>
+						<li><a href="#">Add bank</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li style="" id="log_button"><a href="#">Log out</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container" style="padding: 60px 15px;">
+			<div class="page-header">
+				<h3 id="welcome_message">Welcome, <h3>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Your accounts:</h3>
+				</div>
+				<ul class="list-group">
+					<li class="list-group-item">No accounts</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
