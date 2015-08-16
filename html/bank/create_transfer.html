@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script src="../js/auth.js"></script>
+		<script src="../js/bankCreateTransfer.js"></script>
+		<title>Transfer</title>
+		<style>
+			.center-drop {
+			  left: 50%;
+			  right: auto;
+			  text-align: center;
+			  transform: translate(-50%, 0);
+			}
+		</style>
+	</head>
+	<body onload="init()">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="index.html">CryptBank</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="../">Main</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Transfer <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Create new transfer</a></li>
+								<li><a href="view_transfers.html">View all transfers</a></li>
+							</ul>
+						</li>
+						<li><a href="#">Add bank</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li style="" id="log_button"><a href="#">Log out</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container" style="padding: 60px 15px;">
+			<div class="page-header">
+				<h3> Transfer money between users </h3>
+			</div>
+			<div style="text-align: center;">
+				<h4>Select account to transfer money</h4>
+				<br>
+				<div class="dropdown">
+					<div class="row">
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Select Account
+								<span class="caret"></span>
+							</button>
+							<ul id="bank_accounts" class="dropdown-menu center-drop" aria-labelledby="dropdownMenu1" style="text-align: left">
+								<li><a href="#">None</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<h4 id="account_info" style="display: none"></h4>
+				<br>
+				<h4>Input amount to transfer</h4>
+				<br>
+				<div class="row">
+					<div class="col-md-4"></div>
+					<div class="col-md-4">
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+								<input type="text" class="form-control" id="money_field" placeholder="Amount">
+							<div class="input-group-addon">.00</div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<h4>Enter recipient username</h4>
+				<br>
+				<div class="row">
+					<div class="col-md-4"></div>
+					<div class="col-md-4">
+						<input type="username" class="form-control" id="username_field" placeholder="Enter username">
+					</div>
+				</div>
+				<br>
+				<br>
+				<div class="row">
+					<div class="col-md-4"></div>
+					<div class="col-md-4">
+						<button id="transfer_button" class="btn btn-primary">Transfer cash</button>
+						<h4 id="message"></h4>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

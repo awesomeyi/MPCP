@@ -25,6 +25,19 @@
 			}
 			return False;
 		}
+		private static function getUserIdFromUsername($username) {
+			$db = self::getConnection();
+			$stmt = $db->prepare("SELECT userid FROM users WHERE username=?");
+			$stmt->bind_param('s', $username);
+			$stmt->execute();
+			$res = $stmt->get_result();
+			$stmt->close();
+
+			if($res->num_rows == 1) {
+				return $res->fetch_assoc()['userid'];
+			}
+			return False;
+		}
 		private static function authQuery($authcode, $query) {
 			$db = self::getConnection();
 			$userid = self::getUserId($authcode);
@@ -36,6 +49,30 @@
 				return Signal::$dbConnectionError;
 			}
 			return $stmt->get_result();
+		}
+		private static function accountChange($userid, $acid, $amount) {
+			$db = self::getConnection();
+			return !!$db->query("UPDATE accounts SET balance = balance + $amount WHERE accountid=$acid AND userid = $userid");
+		}
+
+		private static function validateTransfer($tid) {
+			$db = self::getConnection();
+			$stmt = $db->prepare("SELECT fromCheck, toCheck, complete FROM transfers WHERE transferid=?");
+			$stmt->bind_param('d', $tid);
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$res = $stmt->get_result();
+			$row = $res->fetch_assoc();
+			return $row['fromCheck'] && $row['toCheck'] && !$row['complete'];
+		}
+
+		private static function getOpenAccountId($userid) {
+			$db = self::getConnection();
+			$res = $db->query("SELECT accountid FROM accounts WHERE name='Open' AND userid=$userid");
+			if(!$res)
+				return Signal::$dbConnectionError;
+			return $res->fetch_assoc()['accountid'];
 		}
 
 		public static function registerUser($uname, $pword) {
@@ -59,6 +96,12 @@
 			if(!$stmt->execute()) {
 				return Signal::$dbConnectionError;
 			}
+			$stmt->close();
+
+			$res = $db->query("SELECT LAST_INSERT_ID()");
+			$uid = $res->fetch_assoc()['LAST_INSERT_ID()'];
+			if(!$db->query("INSERT INTO accounts VALUES (NULL, 1, $uid, 'Open', 0)"))
+				return Signal::$dbConnectionError;
 			return Signal::$success;
 		}
 
@@ -127,7 +170,7 @@
 		}
 
 		public static function getAccounts($authcode) {
-			$query = "SELECT accountid, bankname, balance FROM accounts INNER JOIN banks ON accounts.bankid = banks.bankid WHERE userid=?";
+			$query = "SELECT accountid, bankname, balance, name FROM accounts INNER JOIN banks ON accounts.bankid = banks.bankid WHERE userid=?";
 			$res = self::authQuery($authcode, $query);
 			if($res instanceof ISIGNAL)
 				return $res;
@@ -136,6 +179,152 @@
 				$rows[] = $r;
 			}
 			return new ISIGNAL($rows, 1);
+		}
+
+		public static function getTransfers($authcode)
+		{
+			$all = array("requested" => array(), "received" => array());
+			$rqquery = "SELECT transferid, username, amount, fromcheck, tocheck, complete, starttime, endtime FROM transfers INNER JOIN users ON transfers.toid = users.userid WHERE fromid=?";
+			$res = self::authQuery($authcode, $rqquery);
+			if($res instanceof ISIGNAL)
+				return $res;
+			while($r = $res->fetch_assoc()) {
+				$all["requested"][] = $r;
+			}
+			
+			$rcquery = "SELECT transferid, username, amount, fromcheck, tocheck, complete, starttime, endtime FROM transfers INNER JOIN users ON transfers.fromid = users.userid WHERE toid=?";
+			$res = self::authQuery($authcode, $rcquery);
+			if($res instanceof ISIGNAL)
+				return $res;
+			while($r = $res->fetch_assoc()) {
+				$all["received"][] = $r;
+			}
+			return new ISIGNAL($all, 1);
+		}
+
+		public static function requestTransfer($authcode, $curaid, $toun, $amount) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+
+			//Validate current user
+			if(!$userid) 
+				return Signal::$authenticationError;
+
+			//Validate account
+			$stmt = $db->prepare("SELECT balance FROM accounts WHERE accountid=? AND userid=?");
+			$stmt->bind_param('dd', $curaid, $userid);
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$res = $stmt->get_result();
+			if($res instanceof ISIGNAL)
+				return $res;
+			if($res->num_rows != 1)
+				return new ISIGNAL("Invalid account", 0);
+
+			//Validate balance
+			$curbal = $res->fetch_assoc()['balance'];
+			$iamount = intval($amount);
+			if($iamount <= 0) 
+				return new ISIGNAL("Must transfer non-zero amounts", 0);
+			elseif($iamount > $curbal)
+				return new ISIGNAL("Transfering too much money", 0);
+
+			//Deduct amount
+			if(!self::accountChange($userid, $curaid, -$iamount))
+				return Signal::$dbConnectionError;
+
+			//Validate transferto
+			$toid = self::getUserIdFromUsername($toun);
+			if(!$toid)
+				return new ISIGNAL("Invalid transfer destination", 0);
+
+			//Create new transfer
+			$db->query("INSERT INTO transfers VALUES (NULL, $userid, $toid, $amount, TRUE, FALSE, FALSE, NOW(), NULL)");
+			$tid = $db->query("SELECT LAST_INSERT_ID()");
+			return new ISIGNAL($tid->fetch_assoc()['LAST_INSERT_ID()'], 1);
+		}
+
+		public static function cancelTransfer($authcode, $tid) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+			if(!$userid) 
+				return Signal::$authenticationError;
+
+			//Fetch correct transferid and amount
+			$stmt = $db->prepare("SELECT transferid, amount, fromid FROM transfers WHERE transferid=? AND (fromid=? OR toid=?) AND complete=FALSE");
+			$stmt->bind_param('ddd', $tid, $userid, $userid);
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$res = $stmt->get_result();
+			$stmt->close();
+			if($res->num_rows != 1)
+				return new ISIGNAL("Invalid transfer", 0);
+
+			$row = $res->fetch_assoc();
+			$chtid = $row['transferid'];
+			$amount = $row['amount'];
+			$fromid = $row['fromid'];
+
+			//Set cancellation depending on from or to user
+			$query = "";
+			if($fromid == $userid)
+				$query = "UPDATE transfers SET fromCheck=FALSE, complete=TRUE, endtime=NOW() WHERE transferid=$chtid";
+			else
+				$query = "UPDATE transfers SET toCheck=FALSE, complete=TRUE, endtime=NOW() WHERE transferid=$chtid";
+
+			if(!$db->query($query))
+				return Signal::$dbConnectionError;
+
+			//Return amount to account
+			$oid = self::getOpenAccountId($fromid);
+			if($oid instanceof ISIGNAL)
+				return $oid;
+
+			if(!self::accountChange($fromid, $oid, $amount))
+				return Signal::$dbConnectionError;
+
+			return Signal::$success;
+		}
+		public static function acceptTransfer($authcode, $tid) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+			if(!$userid) 
+				return Signal::$authenticationError;
+
+			//Fetch correct transferid and amount
+			$stmt = $db->prepare("SELECT transferid, amount FROM transfers WHERE transferid=? AND toid=? AND complete=FALSE");
+			$stmt->bind_param('dd', $tid, $userid);
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$res = $stmt->get_result();
+			$stmt->close();
+
+			if($res->num_rows != 1)
+				return new ISIGNAL("Invalid transfer", 0);
+
+			$row = $res->fetch_assoc();
+			$chtid = $row['transferid'];
+			$amount = $row['amount'];
+
+			//Validate transfer
+			$db->query("UPDATE transfers SET toCheck=TRUE WHERE transferid=$chtid");
+			if(!self::validateTransfer($tid))
+				return new ISIGNAL("Invalid transfer", 0);
+
+			//Add amount to current account
+			$oid = self::getOpenAccountId($userid);
+			if($oid instanceof ISIGNAL)
+				return $oid;
+
+			if(!self::accountChange($userid, $oid, $amount))
+				return Signal::$dbConnectionError;
+
+			//Mark as complete
+			$db->query("UPDATE transfers SET complete=TRUE, endtime=NOW() WHERE transferid=$chtid");
+			return Signal::$success;
 		}
 
 		public static function createAccount($authcode) {

@@ -33,10 +33,24 @@ CREATE TABLE banks
 	routing char(9) not null
 );
 
-CREATE TABLE account
+CREATE TABLE accounts
 (
 	accountid int unsigned not null auto_increment primary key,
 	bankid int unsigned not null,
 	userid int unsigned not null,
+	name char(50) not null,
 	balance int not null
+);
+
+CREATE TABLE transfers
+(
+	transferid int unsigned not null auto_increment primary key,
+	fromid int unsigned not null,
+	toid int unsigned not null,
+	amount int not null,
+	fromcheck BOOL not null,
+	tocheck BOOL not null,
+	complete BOOL not null,
+	starttime DATETIME not null,
+	endtime DATETIME
 );

@@ -18,15 +18,11 @@ function init()
 			$("#bank_accounts").append(nele);
 
 			var bname = document.createElement("h4");
-			$(bname).html(acc[i].bankname);
+			$(bname).html(acc[i].name + " (" + acc[i].bankname + ")");
 			$(nele).append(bname);
 
 			var bal = document.createElement("p");
-			var cents = acc[i].balance % 100;
-			var dollars = acc[i].balance / 100;
-			var money = "$" + dollars + "." + cents;
-			if(money[money.length - 1] == '0')
-				money += '0';
+			var money = getMoney(acc[i].balance);
 			$(bal).html(money);
 			$(nele).append(bal);
 		}

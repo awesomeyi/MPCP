@@ -51,5 +51,5 @@ function regFail(message)
 function regSuccess(data)
 {
 	localStorage.setItem("authcode", data.authcode);
-	window.location="/bank/index.html";
+	window.location.href = "index.html";
 }
