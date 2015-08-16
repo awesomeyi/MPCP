@@ -1,11 +1,18 @@
 //bankViewTransfers.js
 
+function formatDate(dt)
+{
+	if(dt instanceof Date)
+		return "" + dt.getMonth() + "/" + dt.getDate() + "/" + dt.getFullYear();
+	return dt;
+}
+
 function createRow(data)
 {
 	var row = document.createElement("tr");
 
 	var start = document.createElement("td");
-	$(start).html(data.starttime);
+	$(start).html(formatDate(data.starttime));
 	$(row).append(start);
 
 	var touser = document.createElement("td");
@@ -30,10 +37,23 @@ function createRow(data)
 	$(row).append(amount);
 
 	var end = document.createElement("td");
-	$(end).html(data.endtime);
+	$(end).html(formatDate(data.endtime));
 	$(row).append(end);
 
 	return row;
+}
+
+function convertSort(data)
+{
+	for(var i = 0; i < data.length; ++i) {
+		data[i].starttime = new Date(data[i].starttime);
+		if(data[i].complete > 0)
+			data[i].endtime = new Date(data[i].endtime);
+	}
+	data.sort(function(a, b){
+		return b.starttime - a.starttime;
+	});
+	return data;
 }
 
 function init()
@@ -46,7 +66,7 @@ function init()
 			$("#requested_transfers").show();
 		}
 		var requested = transfers.requested;
-		requested = requested.reverse();
+		requested = convertSort(requested);
 		for(var i = 0; i < requested.length; ++i) {
 
 			var row = createRow(requested[i]);
@@ -83,6 +103,7 @@ function init()
 			$("#received_transfers").show();
 		}
 		var received = transfers.received;
+		received = convertSort(received);
 		for(var i = 0; i < received.length; ++i) {
 
 			var row = createRow(received[i]);

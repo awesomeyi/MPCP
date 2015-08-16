@@ -7,6 +7,11 @@
 		<script src="../js/auth.js"></script>
 		<script src="../js/bankHome.js"></script>
 		<title>Bank home</title>
+		<style>
+			.table > tbody > tr > td {
+     			vertical-align: middle;
+			}
+		</style>
 	</head>
 	<body onload="init()">
 		<nav class="navbar navbar-inverse navbar-fixed-top">
@@ -45,6 +50,22 @@
 				<ul class="list-group" id="bank_accounts">
 					<li class="list-group-item">No accounts</li>
 				</ul>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Open transfers:</h3>
+				</div>
+				<ul class="list-group" id="no_open_transfers">
+					<li class="list-group-item">No transfers</li>
+				</ul>
+				<table class="table" id="open_transfers" style=" display: none;">
+					<tr> 
+						<th>User</th>
+						<th>Amount</th>
+						<th class="col-md-2"></th>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</body>
