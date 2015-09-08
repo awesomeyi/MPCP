@@ -1,12 +1,12 @@
-API Usage
+API Usage Guide
 ========
 API Usage guide. Requests take the following form `/API/action`.
 
 ### General form
 
-The server will return a JSON Object with the following properties:
+On every request, the server will return a JSON Object with the following properties:
 + status: Success/Failure
-+ message: On failure, return error message, return requested data on success
++ message: On failure, return error message. On success, return requested data.
 
 ### register (POST)
 
@@ -46,7 +46,9 @@ Fetches the username of user.
 Returns all user accounts in the following form: 
 
 ```
-[ //Array of account objects
+//Array of account objects
+[ 
+  //Account object has the following properties
   { 
     accountid
     bankname
@@ -62,7 +64,8 @@ Returns all transfers in the following form:
 
 ```
 {
-  requested: //List of requested transfers objects
+  //List of requested transfers objects
+  requested:
   [ 
     //Individual transfer object with the following properties
     { 
@@ -77,7 +80,8 @@ Returns all transfers in the following form:
     }
   ],
   
-  recieved: //List of recieved transfer objects
+  //List of recieved transfer objects
+  recieved:
   [
     //Same internal structure as "requested" 
   ]
@@ -85,7 +89,7 @@ Returns all transfers in the following form:
 }
 ```
 
-**The following deal with transfers**
+**The following deal with specific transfer actions.**
 
 ### transfer/create (POST)
 
