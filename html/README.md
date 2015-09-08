@@ -55,6 +55,7 @@ Returns all user accounts in the following form:
     balance
     name
   }
+  ...
 ]
 ```
 
@@ -77,7 +78,8 @@ Returns all transfers in the following form:
       complete
       starttime
       endtime
-    }
+    },
+    ...
   ],
   
   //List of recieved transfer objects
@@ -107,3 +109,5 @@ Cancels a transfer.
 
 Accept a transfer.
 + transferid: id of accepted transfer
+
+**Carrier specific commands. Requests take the form `/API/carrier/action`.
