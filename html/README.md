@@ -39,7 +39,7 @@ Verify validity of `authcode`.
 
 Fetches the username of user.
 
-**Bank specific commands. Requests take the form `/API/bank/action`.
+**Bank specific commands. Requests take the form `/API/bank/action`.**
 
 ### accounts (GET)
 
@@ -47,7 +47,7 @@ Returns all user accounts in the following form:
 
 ```
 [ //Array of account objects
-  { //Properties
+  { 
     accountid
     bankname
     balance
@@ -64,7 +64,8 @@ Returns all transfers in the following form:
 {
   requested: //List of requested transfers objects
   [ 
-    { //Individual transfer object with the following properties
+    //Individual transfer object with the following properties
+    { 
       transferid
       username
       amount
