@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script src="../js/auth.js"></script>
+		<script src="../js/carrierHome.js"></script>
+		<title>Carrier home</title>
+		<style>
+			.table > tbody > tr > td {
+     			vertical-align: middle;
+			}
+		</style>
+	</head>
+	<body onload="init()">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">CryptCarrier</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="../">Main</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li style="" id="log_button"><a href="#">Log out</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container" style="padding: 60px 15px;">
+			<div class="page-header">
+				<h3 id="welcome_message">Welcome, <h3>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Your phones:</h3>
+				</div>
+				<ul class="list-group" id="no_phones">
+					<li class="list-group-item">No phones</li>
+				</ul>
+				<table class="table phone_exist">
+					<tr id="all_phones" style=" display: none;"> 
+						<th>Phone Number</th>
+						<th class="col-md-2"></th>
+					</tr>
+					<tr id="add_phone_row" style="display:none;">
+						<td>
+							<input type="text" class="form-control" id="add_number" maxlength="10" placeholder="Enter phone number" style="width: 200px">
+						</td>
+						<td>
+							<button type="button" class="btn btn-success dropdown-toggle" id="add_button">Add</button>
+						</td>
+					</tr>
+				</table>
+				<ul class="list-group">
+					<li class="list-group-item">
+						<button type="button" class="btn btn-info dropdown-toggle" id="add_phone">
+							Add Phone
+						</button>
+					</li>
+				</ul>
+			</div>
+			<h4 id="message"></h2>
+		</div>
+	</body>
+</html>

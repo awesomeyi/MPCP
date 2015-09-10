@@ -202,6 +202,19 @@
 			return new ISIGNAL($all, 1);
 		}
 
+		public static function getPhones($authcode)
+		{
+			$query = "SELECT cellid, cellnumber FROM cellphones WHERE userid=?";
+			$res = self::authQuery($authcode, $query);
+			if($res instanceof ISIGNAL)
+				return $res;
+			$rows = array();
+			while($r = $res->fetch_assoc()) {
+				$rows[] = $r;
+			}
+			return new ISIGNAL($rows, 1);
+		}
+
 		public static function requestTransfer($authcode, $curaid, $toun, $amount) {
 			$db = self::getConnection();
 			$userid = self::getUserId($authcode);
@@ -324,6 +337,60 @@
 
 			//Mark as complete
 			$db->query("UPDATE transfers SET complete=TRUE, endtime=NOW() WHERE transferid=$chtid");
+			return Signal::$success;
+		}
+
+		public static function addNumber($authcode, $number) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+			if(!$userid) 
+				return Signal::$authenticationError;
+
+			if(strlen($number) != 10)
+				return new ISIGNAL("Number must be 10 digits long", 0);
+
+			for($i = 0; $i < 9; ++$i) {
+				if(!is_numeric($number[$i]))
+					return new ISIGNAL("Number must be numeric 0 - 9 only", 0);
+			}
+
+			//Check if number already exists
+			$stmt = $db->prepare("SELECT cellid FROM cellphones WHERE cellnumber=?");
+			$stmt->bind_param('s', $number);
+
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$res = $stmt->get_result();
+			$stmt->close();
+
+			if($res->num_rows > 0) {
+				return new ISIGNAL("Phone number already added", 0);
+			}
+
+			$stmt = $db->prepare("INSERT INTO cellphones VALUES (NULL, $userid, ?)");
+			$stmt->bind_param('s', $number);
+
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$stmt->close();
+			return Signal::$success;
+		}
+
+		public static function deleteNumber($authcode, $cellid) {
+			$db = self::getConnection();
+			$userid = self::getUserId($authcode);
+			if(!$userid) 
+				return Signal::$authenticationError;
+
+			$stmt = $db->prepare("DELETE FROM cellphones WHERE cellid=? AND userid=$userid");
+			$stmt->bind_param('d', $cellid);
+
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$stmt->close();
 			return Signal::$success;
 		}
 

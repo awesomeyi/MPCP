@@ -91,8 +91,32 @@
 				"transfers" => function() {
 					return authAction("getTransfers");
 				}
-			)
+			),
 
+			"carrier" => array(
+
+				"phones" => function() {
+					return authAction("getPhones");
+				},
+
+				"phone" => array(
+
+					"add" => function() {
+						$authcode = $_GET["authcode"];
+						$number = $_POST["number"];
+						$res = DataAccess::addNumber($authcode, $number);
+						return getRet($res);
+					},
+
+					"delete" => function() {
+						$authcode = $_GET["authcode"];
+						$cid = $_POST["cellid"];
+						$res = DataAccess::deleteNumber($authcode, $cid);
+						return getRet($res);
+					}
+
+				)
+			)
 	);
 
 	$raction = explode("/", $request);

@@ -77,6 +77,12 @@ AuthAccess.prototype = {
 		}, function() {});
 	},
 
+	getPhones: function(fun) {
+		this.APIGET("carrier/phones", function(data) {
+			fun(data.message);
+		}, function() {});
+	},
+
 	createTransfer: function(acid, amount, username, success, fail) {
 		var obj = {
 			accountid: acid,
@@ -106,6 +112,28 @@ AuthAccess.prototype = {
 			transferid: tid
 		}
 		this.APIPOST("bank/transfer/accept", obj, function(data) {
+			success(data.message);
+		}, function(data) {
+			fail(data.message);
+		});
+	},
+
+	addPhone: function(number, success, fail) {
+		var obj = {
+			number: number
+		}
+		this.APIPOST("carrier/phone/add", obj, function(data) {
+			success(data.message);
+		}, function(data) {
+			fail(data.message);
+		});
+	},
+
+	deletePhone: function(cid, success, fail) {
+		var obj = {
+			cellid: cid
+		}
+		this.APIPOST("carrier/phone/delete", obj, function(data) {
 			success(data.message);
 		}, function(data) {
 			fail(data.message);
