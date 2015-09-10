@@ -110,4 +110,29 @@ Cancels a transfer.
 Accept a transfer.
 + transferid: id of accepted transfer
 
-**Carrier specific commands. Requests take the form `/API/carrier/action`.
+**Carrier specific commands. Requests take the form `/API/carrier/action`.**
+
+### phones (GET)
+
+Get all phones in the following form:
+
+```
+//Array of phone objects
+[
+  //Individual object properties
+  {
+    phoneid
+    cellnumber
+  }
+]
+```
+
+### phone/add (POST)
+
+Add a phone.
++ number: string-9 digit phone number
+
+### phones/delete (POST)
+
+Delete a phone.
++ cellid: ID of cellphone wished to be deleted
