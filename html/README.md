@@ -95,9 +95,10 @@ Returns all transfers in the following form:
 
 ### transfer/create (POST)
 
-Creates a transfer.
+Creates a transfer. Allows you to transfer to a phone number or username. Specify one destination parameter.
 + accountid: account id money is being transfered from
 + destUsername: destination user
++ destNumber: destination number
 + amount: amount of money in cents
 
 ### transfer/cancel (POST)
