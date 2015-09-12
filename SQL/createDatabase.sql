@@ -23,7 +23,6 @@ CREATE TABLE cellphones
 	cellid int unsigned not null auto_increment primary key,
 	userid int unsigned not null,
 	cellnumber char(10) not null,
-	carrier char(50) not null
 );
 
 CREATE TABLE banks
