@@ -41,7 +41,7 @@ function init()
 			return fail("Enter a username");
 
 		amount = Number(amount) * 100;
-		Auth.createTransfer(allAccounts[cselect].accountid, amount, un, success, fail);
+		Auth.createUsernameTransfer(allAccounts[cselect].accountid, amount, un, success, fail);
 	});
 
 	$("#log_button").click(function() {

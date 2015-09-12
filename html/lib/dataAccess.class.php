@@ -394,6 +394,21 @@
 			return Signal::$success;
 		}
 
+		public static function getUserFromPhone($number) {
+			$db = self::getConnection();
+
+			$stmt = $db->prepare("SELECT username FROM cellphones INNER JOIN users ON cellphones.userid = users.userid WHERE cellnumber=?");
+			$stmt->bind_param('s', $number);
+
+			if(!$stmt->execute()) {
+				return Signal::$dbConnectionError;
+			}
+			$res = $stmt->get_result();
+			$stmt->close();
+
+			return new ISIGNAL($res->fetch_assoc()["username"], 1);
+		}
+
 		public static function createAccount($authcode) {
 
 		}

@@ -83,7 +83,7 @@ AuthAccess.prototype = {
 		}, function() {});
 	},
 
-	createTransfer: function(acid, amount, username, success, fail) {
+	createUsernameTransfer: function(acid, amount, username, success, fail) {
 		var obj = {
 			accountid: acid,
 			destUsername: username,

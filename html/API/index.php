@@ -66,7 +66,16 @@
 					"create" => function() {
 						$authcode = $_GET["authcode"];
 						$accountid = $_POST["accountid"];
-						$destUsername = $_POST["destUsername"];
+						if(isset($_POST["destUsername"]))
+							$destUsername = $_POST["destUsername"];
+						else if(isset($_POST["destNumber"])) {
+							$number = $_POST["destNumber"];
+							$ret = DataAccess::getUserFromPhone($number);
+							if($ret->isError()) {
+								return getRet($res);
+							}
+							$destUsername = $ret->getMessage();
+						}
 						$amount = $_POST["amount"];
 						$res = DataAccess::requestTransfer($authcode, $accountid, $destUsername, $amount);
 						return getRet($res);
