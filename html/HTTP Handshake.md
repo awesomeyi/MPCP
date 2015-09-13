@@ -38,6 +38,8 @@ Server:
 
 ### Secure session communication
 
+Session communication. Sent to `/API/session`.
+
 Client:
 + sessionid: (Unencrypted `sessionid`)
 + data: JSON object encrypted with AES
