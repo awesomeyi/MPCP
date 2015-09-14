@@ -1,6 +1,6 @@
 HTTP Handshake
 ========
-Handshake procedures. All requests to `/API/kap`.
+Handshake procedures. All requests to `/API/kap`. You are required to send parameters `step` and `data` in JSON format. The server will reply in the same way, with a JSON object containing `step` and `data`. It will reply with a generic "Error" as `data` if an invalid operation occurs.
 ### Initialize handshake
 
 Client:
@@ -9,7 +9,9 @@ Client:
 
 Server:
 + step: 1
-+ data: valid/invalid
++ data: sessionid
+
+**`sessionid` now must be attached as a get parameter "sessionid".
 
 Execute chosen protocol. All choices listed:
 ### DHE (Diffie Hellman Exchange)
