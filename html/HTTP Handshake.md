@@ -11,7 +11,7 @@ Server:
 + step: 1
 + data: sessionid
 
-**`sessionid` now must be attached as a get parameter "sessionid".
+**`sessionid` now must be attached as a get parameter "sessionid".**
 
 Execute chosen protocol. All choices listed:
 ### DHE (Diffie Hellman Exchange)
