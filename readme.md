@@ -3,7 +3,7 @@
 Dependencies:
 
 + Project aimed to be ran on a LAMP or WAMP stack. 
-+ `mysqli` and `openSSL` should be enabled for PHP
++ `mysqli`, `openSSL` and `cURL` should be enabled for PHP
 + API uses `mod_rewrite`. A `.htaccess` file is attached.
 
 Test server is located here:
