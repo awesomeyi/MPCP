@@ -3,6 +3,7 @@ HTTP API
 Handshake procedures. All requests to `/API/kap`. You are required to send parameters `step` and `data` in JSON format. The server will reply in the same way, with a JSON object containing `step` and `data`. It will reply with a generic "Error" as `data` if an invalid operation occurs.
 
 ### Standard scheme for sending encrypted data
+
 All symmetric encryption is done through AES-CBC.
 
 Data sent and recieved should be a JSON object in this format. Both `iv` and `encrypted` should be encoded through base-64.
