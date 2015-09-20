@@ -1,148 +1,103 @@
 <?php
-	require_once("../lib/dataAccess.class.php");
-	$request = $_GET['request'];
 
-	function getRet($res) {
-		$ret = array("status" => "", "message" => $res->getMessage());
-		if($res->isError()) {
-			$ret["status"] = "Failure";
-		} else {
-			$ret["status"] = "Success";
-		}
-		return $ret;
-	}
-	function authAction($fun) {
-		$fun = 'DataAccess::'.$fun;
-		$authcode = $_GET["authcode"];
-		$res = call_user_func($fun, $authcode);
-		return getRet($res);
-	}
+	require_once("../lib/sessionControl.class.php");
+
 	function notFound() {
 		header("HTTP/1.0 404 Not Found");
 		die();
 	}
 
+	$request = $_GET['request'];
 	$requestChoice = array(
 
-			"login" => function() {
-				$uname = $_POST["username"];
-				$pword = $_POST["password"];
-				$res = DataAccess::logIn($uname, $pword);
-				$ret = getRet($res);
-				if(!$res->isError()) {
-					$ret["message"] = "Log in success!";
-					$ret["authcode"] = $res->getMessage();
-				}
-				return $ret;
-			},
+		"kap" => function() {
+			$json = json_decode(file_get_contents('php://input'), true);
+			$step = $json['step'];
+			$data = $json['data'];
 
-			"register" => function() {
-				$uname = $_POST["username"];
-				$pword = $_POST["password"];
-				$res = DataAccess::registerUser($uname, $pword);
-				return getRet($res);
-			},
+			$error = array("step" => $step, "data" => "Error");
+			$success = array("step" => $step);
 
-			"logout" => function() {
-				return authAction("logOut");
-			},
+			if(!isset($_GET['sessionid'])) {
 
-			"verify" => function() {
-				return authAction("verify");
-			},
-
-			"username" => function() {
-				return authAction("getUsername");
-			},
-
-			"bank" => array(
-
-				"accounts" => function() {
-					return authAction("getAccounts");
-				},
-
-				"transfer" => array(
-
-					"create" => function() {
-						$authcode = $_GET["authcode"];
-						$accountid = $_POST["accountid"];
-						if(isset($_POST["destUsername"]))
-							$destUsername = $_POST["destUsername"];
-						else if(isset($_POST["destNumber"])) {
-							$number = $_POST["destNumber"];
-							$ret = DataAccess::getUserFromPhone($number);
-							if($ret->isError()) {
-								return getRet($res);
-							}
-							$destUsername = $ret->getMessage();
-						}
-						$amount = $_POST["amount"];
-						$res = DataAccess::requestTransfer($authcode, $accountid, $destUsername, $amount);
-						return getRet($res);
-					},
-
-					"cancel" => function() {
-						$authcode = $_GET["authcode"];
-						$tid = $_POST["transferid"];
-						$res = DataAccess::cancelTransfer($authcode, $tid);
-						return getRet($res);
-					},
-
-					"accept" => function() {
-						$authcode = $_GET["authcode"];
-						$tid = $_POST["transferid"];
-						$res = DataAccess::acceptTransfer($authcode, $tid);
-						return getRet($res);
+				//Initialize handshake
+				if($step == 1) {
+					$ssid = SessionControl::initHandshake($data);
+					if(!$ssid) {
+						return $error;
 					}
 
-				),
-
-				"transfers" => function() {
-					return authAction("getTransfers");
+					$success["data"] = $ssid;
+					return $success;
 				}
-			),
+				return $error;
+			}
 
-			"carrier" => array(
+			$sessionid = $_GET['sessionid'];
 
-				"phones" => function() {
-					return authAction("getPhones");
-				},
+			$res = SessionControl::execute($sessionid, $step, $data);
+			if(!$res) {
+				return $error;
+			}
+			$success["data"] = $res;
+			return $success;
+		},
 
-				"phone" => array(
+		"session" => function() {
+			$success = array("status" => "success");
+			$failure = array("status" => "failure");
 
-					"add" => function() {
-						$authcode = $_GET["authcode"];
-						$number = $_POST["number"];
-						$res = DataAccess::addNumber($authcode, $number);
-						return getRet($res);
-					},
+			if(!isset($_GET['sessionid'])) {
+				$failure["data"] = "Error: missing sessionid";
+				return $failure;
+			}
+			$sessionid = $_GET['sessionid'];
 
-					"delete" => function() {
-						$authcode = $_GET["authcode"];
-						$cid = $_POST["cellid"];
-						$res = DataAccess::deleteNumber($authcode, $cid);
-						return getRet($res);
-					}
+			$encrypted = json_decode(file_get_contents('php://input'), true);
+			$data = SessionControl::decryptJSON($sessionid, $encrypted["data"]);
 
-				)
-			)
-	);
+			if(!$data) {
+				$failure["data"] = "Session error";
+				return $failure;
+			}
+			
+			$authcode = $data["authcode"];
+			$action = $data["action"];
+			$parameters = $data["parameters"];
 
-	$raction = explode("/", $request);
-	$cd = $requestChoice;
-	for($i = 0; $i < count($raction) - 1; ++$i) {
-		$cur = $cd[$raction[$i]];
-		if(isset($cur) && is_array($cur)) {
-			$cd = $cur;
-		} else {
-			notFound();
+			//GET request
+			$url = "https://108.6.184.187/API/$action?authcode=$authcode";
+			$curl = curl_init();
+
+			curl_setopt_array($curl, array(
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_URL => $url,
+				CURLOPT_SSL_VERIFYPEER => 0
+			));
+
+			//POST request
+			if(count($parameters) > 0) {
+				curl_setopt($curl, CURLOPT_POST, 1);
+				curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
+			}
+
+			$res = curl_exec($curl);
+			curl_close($curl);
+			$send = SessionControl::encryptJSON($sessionid, $res);
+			if(!$send) {
+				$failure["data"] = "Session error";
+				return $failure;
+			}
+
+			$success["data"] = $send;
+			return $success;
 		}
-	}
-	$last = $raction[count($raction) - 1];
 
-	if(!is_callable($cd[$last])) {
+	);
+	$cur = $requestChoice[$request];
+	if(!isset($cur)) {
 		notFound();
 	}
-	$ret = call_user_func($cd[$last]);
+	$ret = call_user_func($cur);
 	echo json_encode($ret);
 ?>

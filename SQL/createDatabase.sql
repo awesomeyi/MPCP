@@ -22,7 +22,7 @@ CREATE TABLE cellphones
 (
 	cellid int unsigned not null auto_increment primary key,
 	userid int unsigned not null,
-	cellnumber char(10) not null,
+	cellnumber char(10) not null
 );
 
 CREATE TABLE banks
@@ -52,4 +52,23 @@ CREATE TABLE transfers
 	complete BOOL not null,
 	starttime DATETIME not null,
 	endtime DATETIME
+);
+
+CREATE TABLE session
+(
+	sessionid int unsigned not null auto_increment primary key,
+	algid int unsigned not null,
+	step int unsigned not null,
+	symkey char(24),
+	start BOOL not null,
+	tempdata varchar(256),
+	expire DATETIME
+	terminate BOOL not null
+);
+
+CREATE TABLE kap
+(
+	algid int unsigned not null auto_increment primary key,
+	name char(50) not null,
+	length int unsigned not null
 );
