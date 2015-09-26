@@ -28,12 +28,7 @@
 				$uname = $_POST["username"];
 				$pword = $_POST["password"];
 				$res = DataAccess::logIn($uname, $pword);
-				$ret = getRet($res);
-				if(!$res->isError()) {
-					$ret["message"] = "Log in success!";
-					$ret["authcode"] = $res->getMessage();
-				}
-				return $ret;
+				return getRet($res);
 			},
 
 			"register" => function() {
@@ -144,5 +139,7 @@
 		notFound();
 	}
 	$ret = call_user_func($cd[$last]);
+	
+	header('Content-Type: application/json');
 	echo json_encode($ret);
 ?>

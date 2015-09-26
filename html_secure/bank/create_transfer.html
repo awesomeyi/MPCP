@@ -51,11 +51,11 @@
 					<div class="row">
 						<div class="col-md-4"></div>
 						<div class="col-md-4">
-							<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<button class="btn btn-default dropdown-toggle" type="button" id="accountDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								Select Account
 								<span class="caret"></span>
 							</button>
-							<ul id="bank_accounts" class="dropdown-menu center-drop" aria-labelledby="dropdownMenu1" style="text-align: left">
+							<ul id="bank_accounts" class="dropdown-menu center-drop" aria-labelledby="accountDropDown" style="text-align: left">
 								<li><a href="#">None</a></li>
 							</ul>
 						</div>
@@ -76,7 +76,22 @@
 					</div>
 				</div>
 				<br>
-				<h4>Enter recipient username</h4>
+				<h4>Enter recipient: </h4>
+				<div class="dropdown">
+					<div class="row">
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<button class="btn btn-default dropdown-toggle" type="button" id="destDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Username
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu center-drop" aria-labelledby="destDropDown" style="text-align: left">
+								<li><a href="#" id="usernameChoice">Username</a></li>
+								<li><a href="#" id="numberChoice">Phone number</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
 				<br>
 				<div class="row">
 					<div class="col-md-4"></div>

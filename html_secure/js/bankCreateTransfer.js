@@ -18,8 +18,8 @@ function init()
 			$("#bank_accounts").append(nele);
 
 			$(nele).click(function() {
-				$("#dropdownMenu1").text($(this).text());
-				$("#dropdownMenu1").val($(this).text());
+				$("#accountDropDown").text($(this).text());
+				$("#accountDropDown").val($(this).text());
 
 				var id = $(this).attr('id');
 				cselect = id;
@@ -30,6 +30,7 @@ function init()
 			});
 		}
 	});
+	var dest = "username";
 	$("#transfer_button").click(function() {
 		var amount = $("#money_field").val();
 		var un = $("#username_field").val();
@@ -38,15 +39,40 @@ function init()
 		if(amount.length == 0)
 			return fail("Enter an amount");
 		if(un.length == 0)
-			return fail("Enter a username");
+			return fail("Enter a" + number);
 
 		amount = Number(amount) * 100;
-		Auth.createUsernameTransfer(allAccounts[cselect].accountid, amount, un, success, fail);
+		Auth[functionize(dest)](allAccounts[cselect].accountid, amount, un, success, fail);
+	});
+
+	function setDropdown(id, text) {
+		$(id).text(text);
+		$(id).val(text);
+	}
+
+	function choiceClick() {
+		$("#username_field").attr("placeholder", "Enter " + dest);
+	}
+
+	$("#usernameChoice").click(function() {
+		setDropdown("#destDropDown", $(this).text());
+		dest = "username";
+		choiceClick();
+	});
+
+	$("#numberChoice").click(function() {
+		setDropdown("#destDropDown", $(this).text());
+		dest = "number";
+		choiceClick();
 	});
 
 	$("#log_button").click(function() {
 		Auth.logout();
 	});
+}
+
+function functionize(dest) {
+	return "create" + dest.charAt(0).toUpperCase() + dest.slice(1) + "Transfer";
 }
 
 function fail(message)

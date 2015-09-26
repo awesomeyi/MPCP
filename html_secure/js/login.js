@@ -50,6 +50,6 @@ function regFail(message)
 
 function regSuccess(data)
 {
-	localStorage.setItem("authcode", data.authcode);
+	localStorage.setItem("authcode", data.message);
 	window.location.href = "index.html";
 }

@@ -96,10 +96,23 @@ AuthAccess.prototype = {
 		});
 	},
 
+	createNumberTransfer: function(acid, amount, username, success, fail) {
+		var obj = {
+			accountid: acid,
+			destNumber: username,
+			amount: amount
+		};
+		this.APIPOST("bank/transfer/create", obj, function(data) {
+			success(data.message);
+		}, function(data) {
+			fail(data.message);
+		});
+	},
+
 	cancelTransfer: function(tid, success, fail) {
 		var obj = {
 			transferid: tid
-		}
+		};
 		this.APIPOST("bank/transfer/cancel", obj, function(data) {
 			success(data.message);
 		}, function(data) {
@@ -110,7 +123,7 @@ AuthAccess.prototype = {
 	acceptTransfer: function(tid, success, fail) {
 		var obj = {
 			transferid: tid
-		}
+		};
 		this.APIPOST("bank/transfer/accept", obj, function(data) {
 			success(data.message);
 		}, function(data) {
@@ -121,7 +134,7 @@ AuthAccess.prototype = {
 	addPhone: function(number, success, fail) {
 		var obj = {
 			number: number
-		}
+		};
 		this.APIPOST("carrier/phone/add", obj, function(data) {
 			success(data.message);
 		}, function(data) {
@@ -132,7 +145,7 @@ AuthAccess.prototype = {
 	deletePhone: function(cid, success, fail) {
 		var obj = {
 			cellid: cid
-		}
+		};
 		this.APIPOST("carrier/phone/delete", obj, function(data) {
 			success(data.message);
 		}, function(data) {

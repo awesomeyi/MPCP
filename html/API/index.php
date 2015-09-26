@@ -66,7 +66,7 @@
 			$parameters = $data["parameters"];
 
 			//GET request
-			$url = "https://108.6.184.187/API/$action?authcode=$authcode";
+			$url = "https://".$_SERVER["SERVER_NAME"]."/API/$action?authcode=$authcode";
 			$curl = curl_init();
 
 			curl_setopt_array($curl, array(
@@ -99,5 +99,7 @@
 		notFound();
 	}
 	$ret = call_user_func($cur);
+
+	header('Content-Type: application/json');
 	echo json_encode($ret);
 ?>
