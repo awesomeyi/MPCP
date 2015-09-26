@@ -1,12 +1,14 @@
 package com.yizzle.androidstudio.WebAPI;
 
 import android.util.Base64;
+import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -26,32 +28,32 @@ public class CryptoAPI {
         keySpec = new SecretKeySpec(key, "AES");
     }
 
-    public JSONObject AESENCRYPT(String plaintext) {
+    public JSONObject AESENCRYPT(String plaintext) throws Exception {
+        Cipher aes = Cipher.getInstance(CIPHER);
+        aes.init(Cipher.ENCRYPT_MODE, keySpec);
+        byte[] encrypted = aes.doFinal(plaintext.getBytes("UTF-8"));
+        byte[] iv = aes.getIV();
+
+        String encrypted64 = Base64.encodeToString(encrypted, Base64.NO_WRAP);
+        String iv64 = Base64.encodeToString(iv, Base64.NO_WRAP);
+
         JSONObject ret = new JSONObject();
-        try {
+        ret.put("encrypted", encrypted64);
+        ret.put("iv", iv64);
 
-            Cipher aes = Cipher.getInstance(CIPHER);
-            aes.init(Cipher.ENCRYPT_MODE, keySpec);
-            byte[] encrypted = aes.doFinal(plaintext.getBytes());
-            byte[] iv = aes.getIV();
-
-            String encrypted64 = Base64.encodeToString(encrypted, Base64.NO_WRAP);
-            String iv64 = Base64.encodeToString(iv, Base64.NO_WRAP);
-
-            ret.put("encrypted", encrypted64);
-            ret.put("iv", iv64);
-
-            return ret;
-        } catch(Exception e) {
-
-        }
-
-        return null;
+        return ret;
     }
 
-    public String AESDECRYPT(JSONObject encrypted) {
-        String plaintext = new String();
+    public String AESDECRYPT(JSONObject encrypted) throws Exception {
+        Log.d("SESSION", encrypted.toString());
+        byte[] iv = Base64.decode(encrypted.getString("iv"), Base64.NO_WRAP);
+        byte[] raw = Base64.decode(encrypted.getString("encrypted"), Base64.NO_WRAP);
 
-        return plaintext;
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        Cipher aes = Cipher.getInstance(CIPHER);
+        aes.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+
+        byte[] decrypted = aes.doFinal(raw);
+        return new String(decrypted, "UTF-8");
     }
 }

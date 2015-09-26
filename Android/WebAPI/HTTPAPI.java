@@ -15,18 +15,16 @@ import java.io.InputStream;
  */
 public class HTTPAPI {
 
-    private static final String dest = "http://108.6.184.187/API/";
+    private static final String dest = "http://mpcp.no-ip.org/API/";
 
     public static JSONObject JSONPOST(String action, JSONObject jparam) throws Exception {
-        InputStream is = null;
-        int maxlength = 1000;
         String param = jparam.toString();
 
         URL url = new URL(dest + action);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-        conn.setReadTimeout(10000 /*milliseconds*/);
-        conn.setConnectTimeout(15000 /* milliseconds */);
+        conn.setReadTimeout(10000);
+        conn.setConnectTimeout(15000);
         conn.setRequestMethod("POST");
         conn.setDoInput(true);
         conn.setDoOutput(true);
@@ -41,12 +39,14 @@ public class HTTPAPI {
         OutputStream os = new BufferedOutputStream(conn.getOutputStream());
         os.write(param.getBytes());
         os.flush();
+        os.close();
 
         int responseCode = conn.getResponseCode();
-        is = conn.getInputStream();
+        InputStream is = conn.getInputStream();
 
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         String response = s.hasNext() ? s.next() : "";
+        Log.d("SESSION", response);
         JSONObject jresponse = new JSONObject(response);
         return jresponse;
     }
