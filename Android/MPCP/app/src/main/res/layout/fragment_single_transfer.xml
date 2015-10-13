@@ -1,0 +1,44 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="70dp" tools:context="com.yizzle.mpcp.SingleTransfer">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="$150"
+        android:id="@+id/textView4"
+        android:layout_gravity="left|bottom|center"
+        android:textSize="15dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="3dp" />
+
+    <TextView android:layout_width="144dp" android:layout_height="29dp"
+        android:layout_gravity="left|center_vertical"
+        android:id="@+id/destination"
+        android:text="From (user)"
+        android:textSize="20dp"
+        android:textColor="#000000"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="3dp" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/button2"
+        android:layout_gravity="right|center_vertical" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accept"
+        android:id="@+id/button"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="80dp" />
+
+</FrameLayout>
