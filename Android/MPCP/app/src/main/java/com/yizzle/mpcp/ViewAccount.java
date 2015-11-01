@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yizzle.mpcp.WebAPI.SessionAPI;
@@ -23,9 +24,12 @@ public class ViewAccount extends Fragment {
     private JSONObject allTransfers;
     private JSONArray allAccounts;
     private LinearLayout account_table;
+    private LinearLayout transfer_table;
+    private ProgressBar reload;
 
     public void reload() {
         account_table.removeAllViews();
+        transfer_table.removeAllViews();
         new FetchData().execute();
     }
 
@@ -48,6 +52,8 @@ public class ViewAccount extends Fragment {
         View view = inflater.inflate(R.layout.fragment_view_account, container, false);
 
         account_table = (LinearLayout) view.findViewById(R.id.account_table);
+        transfer_table = (LinearLayout) view.findViewById(R.id.transfer_table);
+        reload = (ProgressBar) view.findViewById(R.id.reload);
         // Inflate the layout for this fragment
         return view;
     }
@@ -58,6 +64,12 @@ public class ViewAccount extends Fragment {
     }
 
     private class FetchData extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            if(reload != null)
+                reload.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -90,13 +102,31 @@ public class ViewAccount extends Fragment {
                     account_table.addView(txtView);
 
                     txtView = new TextView(getContext());
-                    txtView.setText("$" + account.getInt("balance"));
+                    txtView.setText("$" + account.getInt("balance") / 100);
                     txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                     account_table.addView(txtView);
                 }
+                JSONArray reqtrans = allTransfers.getJSONArray("requested");
+                for(int i = 0; i < reqtrans.length(); ++i) {
+                    JSONObject curobj = reqtrans.getJSONObject(i);
+                    curobj.put("type", "requested");
+                    if(curobj.getInt("complete") == 0) {
+                        ViewAccount.this.getFragmentManager().beginTransaction().add(transfer_table.getId(), SingleTransfer.newInstance(curobj.toString())).commit();
+                    }
+                }
+                JSONArray rectrans = allTransfers.getJSONArray("received");
+                for(int i = 0; i < rectrans.length(); ++i) {
+                    JSONObject curobj = rectrans.getJSONObject(i);
+                    curobj.put("type", "received");
+                    if(curobj.getInt("complete") == 0) {
+                        ViewAccount.this.getFragmentManager().beginTransaction().add(transfer_table.getId(), SingleTransfer.newInstance(curobj.toString())).commit();
+                    }
+                }
             } catch(Exception e) {
-                Log.d("SESSION", e.getMessage());
+                Log.d("SESSION ERROR", e.getMessage());
             }
+            if(reload != null)
+                reload.setVisibility(View.INVISIBLE);
         }
     }
 

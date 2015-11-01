@@ -14,19 +14,19 @@
         android:layout_height="wrap_content"
         android:text="Start Secure Session"
         android:id="@+id/start_button"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:onClick="startSecureSession"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:layout_below="@+id/progress_bar"
+        android:layout_centerHorizontal="true" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progress_bar"
+        android:visibility="invisible"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="invisible" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,8 +34,19 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Using Protocol: "
         android:id="@+id/protocol_text"
-        android:layout_alignParentTop="true"
+        android:maxLines="4"
+        android:layout_above="@+id/start_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="93dp"
-        android:maxLines="4" />
+        android:layout_marginBottom="120dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Login as: "
+        android:id="@+id/username_text"
+        android:maxLines="4"
+        android:layout_marginBottom="80dp"
+        android:layout_above="@+id/protocol_text"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -94,6 +94,7 @@ public class SecureAPI {
 
         OutputStream os = conn.getOutputStream();
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+        Log.d("HTTPS", getPostString(params));
         bw.write(getPostString(params));
         bw.flush();
         bw.close();

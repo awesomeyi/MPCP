@@ -1,18 +1,17 @@
 package com.yizzle.mpcp.WebAPI;
 
-import android.util.Log;
 import org.json.JSONObject;
 
 /**
- * TestProtcol
+ * Diffie Hellman Key Exchange Protocol
  *
- * "test" handshake protocol. NOT SECURE, testing only.
+ * "DHE"
  */
-public class TestProtocol extends BaseProtocol {
+public class DHEProtocol extends BaseProtocol {
     private String sessionId = null;
     private String symkey = null;
 
-    public static String name = "Test";
+    public static String name = "DHE";
 
     protected String sessionAction() {
         return INITIAL_ACTION + "?sessionid=" + this.sessionId;
@@ -73,7 +72,6 @@ public class TestProtocol extends BaseProtocol {
 
     @Override
     public String toString() {
-        return "Test (TEST)";
+        return "Diffie Hellman (DHE)";
     }
-
 }

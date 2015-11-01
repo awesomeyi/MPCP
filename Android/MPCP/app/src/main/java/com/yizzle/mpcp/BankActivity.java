@@ -14,21 +14,22 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.yizzle.mpcp.WebAPI.SessionAPI;
 
 import org.json.JSONObject;
 
-public class BankActivity extends AppCompatActivity {
+public class BankActivity extends AppCompatActivity
+        implements SingleTransfer.OnFragmentInteractionListener{
 
     private String username;
     private Fragment viewAccount = ViewAccount.newInstance();
     private Fragment viewTransfer = ViewTransfer.newInstance();
 
     private void reload() {
-        Log.d("SESSION", "reload");
-        new FetchData().execute();
         ((ViewAccount) viewAccount).reload();
     }
 
@@ -53,7 +54,7 @@ public class BankActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        final Intent it = new Intent(this, CreateTransfer.class);
+        final Intent it = new Intent(this, CreateTransferActivity.class);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,11 +67,36 @@ public class BankActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Log.d("SESSION", "RESULT");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_bank, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.reload_button) {
             this.reload();
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            this.reload();
+        }
+    }
+
+    public void reloadButton(View v) {
+        this.reload();
+    }
+
+    @Override
+    public void onFragmentInteraction() {
+        this.reload();
     }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {

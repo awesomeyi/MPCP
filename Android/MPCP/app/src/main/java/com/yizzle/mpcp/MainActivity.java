@@ -1,13 +1,14 @@
 package com.yizzle.mpcp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,14 +21,17 @@ import android.widget.TextView;
 
 import com.yizzle.mpcp.WebAPI.*;
 
-import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.io.BufferedInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
     //Display elements
     private Button button;
     private ProgressBar progressBar;
-    private TextView text;
+    private TextView protocol_text;
+    private TextView username_text;
 
     private BaseProtocol.Retval handShare = null;
     public static BaseProtocol handshakeProtocol = new TestProtocol();
@@ -42,9 +46,38 @@ public class MainActivity extends AppCompatActivity {
 
         button = (Button) findViewById(R.id.start_button);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        text = (TextView) findViewById(R.id.protocol_text);
+        protocol_text = (TextView) findViewById(R.id.protocol_text);
+        protocol_text.append(handshakeProtocol.toString());
 
-        text.append(handshakeProtocol.toString());
+        username_text = (TextView) findViewById(R.id.username_text);
+
+        try {
+            AppData.certStream = new BufferedInputStream(getAssets().open("certificate.crt"));
+        } catch(Exception e) {
+            AppData.certStream = null;
+        }
+
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.authdata), Context.MODE_PRIVATE);
+        String username = sharedPref.getString(getString(R.string.username), AppData.username);
+        String authcode = sharedPref.getString(getString(R.string.authcode), AppData.authcode);
+        Log.d("LOGIN", "UN + auth" + username + " " + authcode);
+
+        if(authcode == null) {
+            username_text.setText("ERROR: Not logged in!");
+            username_text.setTextColor(Color.RED);
+            button.setText("Log in");
+            final Intent it = new Intent(this, LoginActivity.class);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(it, 1);
+                }
+            });
+            return;
+        }
+        username_text.append(username);
+        AppData.username = username;
+        AppData.authcode = authcode;
     }
 
     @Override
@@ -62,8 +95,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_switch_user) {
+            Intent it = new Intent(this, LoginActivity.class);
+            startActivityForResult(it, 1);
         }
 
         return super.onOptionsItemSelected(item);
@@ -79,6 +113,14 @@ public class MainActivity extends AppCompatActivity {
         //Start activity if session is started
         Intent it = new Intent(this, BankActivity.class);
         startActivity(it);
+        recreate();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            this.recreate();
+        }
     }
 
     private class CallProtocol extends AsyncTask<Void, Void,  BaseProtocol.Retval> {
@@ -115,8 +157,8 @@ public class MainActivity extends AppCompatActivity {
 
                     button.setText("Go to account");
 
-                    text.setText("Success!");
-                    text.setTextColor(Color.rgb(34, 139, 34));
+                    protocol_text.setText("Success!");
+                    protocol_text.setTextColor(Color.rgb(34, 139, 34));
                 } catch(Exception e) {
                     errorMessage = e.getMessage();
                 }
@@ -124,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             //Failure
-            text.setText("Connection error");
-            text.setTextColor(Color.RED);
+            protocol_text.setText("Connection error");
+            protocol_text.setTextColor(Color.RED);
             AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
             dialog.setTitle("Error message");
             dialog.setMessage(errorMessage);

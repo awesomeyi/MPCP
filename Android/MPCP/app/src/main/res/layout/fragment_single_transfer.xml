@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="$150"
-        android:id="@+id/textView4"
+        android:id="@+id/amount_field"
         android:layout_gravity="left|bottom|center"
         android:textSize="15dp"
         android:layout_marginBottom="5dp"
@@ -17,7 +17,7 @@
 
     <TextView android:layout_width="144dp" android:layout_height="29dp"
         android:layout_gravity="left|center_vertical"
-        android:id="@+id/destination"
+        android:id="@+id/destination_field"
         android:text="From (user)"
         android:textSize="20dp"
         android:textColor="#000000"
@@ -29,15 +29,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cancel"
-        android:id="@+id/button2"
-        android:layout_gravity="right|center_vertical" />
+        android:id="@+id/cancel_button"
+        android:layout_gravity="right|center_vertical"
+        android:onClick="reloadButton" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Accept"
-        android:id="@+id/button"
+        android:id="@+id/accept_button"
         android:layout_gravity="right|center_vertical"
         android:layout_marginRight="80dp" />
 
