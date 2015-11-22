@@ -8,6 +8,6 @@ Dependencies:
 
 Test server is located here:
 
-### https://108.6.184.187
+### https://mpcp.no-ip.org
 
 Make sure to install the self-signed SSL certificate: `certificate.crt`
